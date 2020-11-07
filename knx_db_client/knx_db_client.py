@@ -1,7 +1,7 @@
 import requests
 import json
 from http import HTTPStatus
-import knx_objects
+from knx_db_client import knx_objects
 
 BASE_PATH = '/knx-db'
 HEADER_CONTENT_TYPE = 'Content-type'

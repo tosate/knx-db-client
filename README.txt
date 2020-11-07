@@ -1,2 +1,2 @@
-python3 setup.py build
-python3 setup.py install
+Installation
+pip3 install .

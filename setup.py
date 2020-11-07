@@ -1,11 +1,9 @@
 from setuptools import setup
 
 setup(
-    name='KnxDbClient',
+    name='knxdbclient',
     version='1.0.0',
-    packages=['knx-db-client'],
-    url='',
-    license='',
+    packages=['knx_db_client'],
     author='Thomas Salm',
     author_email='knx-db-client@devtom.de',
     description='Client for knx-db'

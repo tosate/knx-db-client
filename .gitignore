@@ -1,0 +1,5 @@
+build/
+dist/
+.idea/
+venv/
+KnxDbClient.egg-info/

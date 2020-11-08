@@ -77,15 +77,23 @@ class GroupAddress:
 class Device:
     DEVICE_ID = 'deviceid'
     LABEL = 'label'
+    NAME_AFFIX = 'nameAffix'
     DEVICE_TYPE = 'deviceType'
     GROUP_ADDRESSES = 'groupAddresses'
 
     def __init__(self, label: str, device_type: str):
         self.device_id = None
         self.label = label
+        self.name_affix = None
         self.device_type = device_type
         self.group_addresses = []
         self.room = None
+
+    def set_name_affix(self, name_affix: str):
+        self.name_affix = name_affix
+
+    def get_name_affix(self) -> str:
+        return self.name_affix
 
     def set_device_id(self, device_id: int):
         self.device_id = device_id
@@ -112,6 +120,8 @@ class Device:
             result[self.DEVICE_ID] = self.device_id
 
         result[self.LABEL] = self.label
+        if self.name_affix is not None:
+            result[self.NAME_AFFIX] = self.name_affix
         result[self.DEVICE_TYPE] = self.device_type
 
         group_address_list = []
@@ -126,6 +136,8 @@ class Device:
     @staticmethod
     def device_decoder(device_json: dict):
         result = Device(device_json[Device.LABEL], device_json[Device.DEVICE_TYPE])
+        if device_json[Device.NAME_AFFIX]:
+            result.set_name_affix(device_json[Device.NAME_AFFIX])
         result.set_device_id(device_json[Device.DEVICE_ID])
 
         if device_json[Device.GROUP_ADDRESSES] and len(device_json[Device.GROUP_ADDRESSES]) > 0:
@@ -257,5 +269,13 @@ class Project:
             for room_json in project_json[Project.ROOMS]:
                 room = Room.room_decoder(room_json)
                 result.add_room(room)
+
+        return result
+
+    @staticmethod
+    def project_list_decoder(project_list_json: list) -> list:
+        result = []
+        for project_json in project_list_json:
+            result.append(Project.project_decoder(project_json))
 
         return result

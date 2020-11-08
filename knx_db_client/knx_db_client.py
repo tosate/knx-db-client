@@ -49,6 +49,19 @@ class KnxDbClient:
             raise ValueError(f'Get project returned HTTP status [{response.status_code}]')
 
     @staticmethod
+    def get_project_list(filter_by_name: str = None) -> list:
+        request_headers = {HEADER_ACCEPT: APPLICATION_JSON}
+        url = f'{KnxDbClient.URL_START}/projects'
+        if filter_by_name is not None:
+            url = url + f'?name={filter_by_name}'
+        response = requests.get(url, headers=request_headers)
+        if response.status_code == HTTPStatus.OK:
+            print('Project list retrieved')
+            return knx_objects.Project.project_list_decoder(json.loads(response.text))
+        else:
+            raise ValueError(f'Get project list returned HTTP status [{response.status_code}]')
+
+    @staticmethod
     def delete_project(project: knx_objects.Project) -> bool:
         if project.get_project_id() is None:
             raise ValueError('Unable to delete project: project has no ID')

@@ -21,8 +21,14 @@ class GroupAddress:
     def get_middle_group(self) -> int:
         return self.middle_group
 
+    def get_sub_group(self):
+        return self.sub_group
+
     def set_group_address_id(self, group_address_id: int):
         self.group_address_id = group_address_id
+
+    def get_group_address_id(self):
+        return self.group_address_id
 
     def set_data_type(self, data_type: str):
         self.data_type = data_type
@@ -41,6 +47,9 @@ class GroupAddress:
 
     def get_device(self):
         return self.device
+
+    def get_address(self) -> str:
+        return f'{self.main_group}/{self.middle_group}/{self.sub_group}'
 
     def get_data(self) -> dict:
         result = {}
@@ -70,6 +79,14 @@ class GroupAddress:
 
         if group_address_json[GroupAddress.FUNCTION] is not None:
             result.set_function(group_address_json[GroupAddress.FUNCTION])
+
+        return result
+
+    @staticmethod
+    def group_address_list_decoder(group_address_list_json: dict) -> list:
+        result = []
+        for group_address_json in group_address_list_json:
+            result.append(GroupAddress.group_address_decoder(group_address_json))
 
         return result
 
@@ -114,6 +131,9 @@ class Device:
     def set_room(self, room):
         self.room = room
 
+    def get_group_addresses(self) -> list:
+        return self.group_addresses
+
     def get_data(self) -> dict:
         result = {}
         if self.device_id is not None:
@@ -124,13 +144,6 @@ class Device:
             result[self.NAME_AFFIX] = self.name_affix
         result[self.DEVICE_TYPE] = self.device_type
 
-        group_address_list = []
-        for group_address in self.group_addresses:
-            group_address_list.append(group_address.get_data())
-
-        if len(group_address_list) > 0:
-            result[self.GROUP_ADDRESSES] = group_address_list
-
         return result
 
     @staticmethod
@@ -140,10 +153,13 @@ class Device:
             result.set_name_affix(device_json[Device.NAME_AFFIX])
         result.set_device_id(device_json[Device.DEVICE_ID])
 
-        if device_json[Device.GROUP_ADDRESSES] and len(device_json[Device.GROUP_ADDRESSES]) > 0:
-            for group_address_json in device_json[Device.GROUP_ADDRESSES]:
-                group_address = GroupAddress.group_address_decoder(group_address_json)
-                result.add_group_address(group_address)
+        return result
+
+    @staticmethod
+    def device_list_decoder(device_list_json: dict) -> list:
+        result = []
+        for device_json in device_list_json:
+            result.append(Device.device_decoder(device_json))
 
         return result
 
@@ -185,6 +201,9 @@ class Room:
     def set_project(self, project):
         self.project = project
 
+    def get_devices(self) -> list:
+        return self.devices
+
     def get_data(self) -> dict:
         result = {}
         if self.room_id is not None:
@@ -196,13 +215,6 @@ class Room:
         if self.floor is not None:
             result[self.FLOOR] = self.floor
 
-        device_list = []
-        for device in self.devices:
-            device_list.append(device.get_data())
-
-        if len(device_list) > 0:
-            result[self.DEVICES] = device_list
-
         return result
 
     @staticmethod
@@ -212,10 +224,13 @@ class Room:
         if room_json[Room.FLOOR] and len(room_json[Room.FLOOR]) > 0:
             result.set_floor(room_json[Room.FLOOR])
 
-        if room_json[Room.DEVICES] and len(room_json[Room.DEVICES]) > 0:
-            for device_json in room_json[Room.DEVICES]:
-                device = Device.device_decoder(device_json)
-                result.add_device(device)
+        return result
+
+    @staticmethod
+    def room_list_decoder(room_list_json: dict) -> list:
+        result = []
+        for room_json in room_list_json:
+            result.append(Room.room_decoder(room_json))
 
         return result
 
@@ -249,12 +264,6 @@ class Project:
             result[self.PROJECT_ID] = self.project_id
 
         result[self.NAME] = self.name
-        room_list = []
-        for room in self.rooms:
-            room_list.append(room.get_data())
-
-        if len(room_list) > 0:
-            result[self.ROOMS] = room_list
 
         return result
 
@@ -265,10 +274,6 @@ class Project:
     def project_decoder(project_json: dict):
         result = Project(project_json[Project.NAME])
         result.set_project_id(project_json[Project.PROJECT_ID])
-        if project_json[Project.ROOMS] and len(project_json[Project.ROOMS]) > 0:
-            for room_json in project_json[Project.ROOMS]:
-                room = Room.room_decoder(room_json)
-                result.add_room(room)
 
         return result
 
